@@ -5,6 +5,6 @@
 # Written by Alvin Chen <ychen@aperiomics.com>
 # ==============================================================================
 
-from .db_controller import SqliteDBController
+from .db_controller import SqliteDBController, TaxonomyDBCreator, TaxonomyDBFinder
 
 

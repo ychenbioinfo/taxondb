@@ -12,7 +12,7 @@ from taxondb.file import S3File
 current_dir = os.path.dirname(__file__)
 
 
-def test_dbcontroller():
+def test_dbcontroller_s3():
     controller1 = SqliteDBController()
     controller1.connect(os.path.join(current_dir, 'data/testdb.sqlite'))
 
@@ -24,4 +24,15 @@ def test_dbcontroller():
     s3_retrieve_file.delete()
 
 
+def test_dbcontroller_local():
+    controller1 = SqliteDBController()
+    controller1.connect(os.path.join(current_dir, 'data/testdb.sqlite'))
+
+    test_file = os.path.join(current_dir, 'test.sqlite')
+
+    controller2 = SqliteDBController()
+    controller2.connect(test_file, is_new_db=True)
+    controller2.copy_table(controller1.db_connector, 'test')
+
+    os.unlink(test_file)
 
