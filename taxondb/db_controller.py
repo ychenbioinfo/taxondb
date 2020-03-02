@@ -24,17 +24,15 @@ from .models import TaxonNodes, TaxonNames
 # from django.conf import settings
 #
 # from sharedb.db_connector import DBConnector, DBConfigure
-# from ..db_controller import DBController
+# from ..db_controller import SqliteDBController
 # from ..db_connector import DBConnectionError, DBRecordNotFoundError
 # from apps.genbank.models import Taxonomy
 #
 # from utils.file import download_file, extract_file_from_tar, dir_guard, S3File
 # from utils.decorator import benchmark
-#
-#
 
 
-class DBController(object):
+class SqliteDBController(object):
     """
     Base class for database connection and control
     """
@@ -70,7 +68,16 @@ class DBController(object):
 
     def connect(self, file_path: str, is_new_db: bool = False, is_s3: bool = False,
                 s3_bucket: str = ''):
+        """Connect to sqlite database
 
+        Args:
+            file_path: path of the database file, it can also be the key of S3 file.
+            is_new_db: if connects to the existing s3 db file, the file will be synced to local
+                temporary file system.
+            is_s3: if the database file is local or on S3
+            s3_bucket: S3 bucket name. If not provided, it will use environment variable
+                AWS_STORAGE_BUCKET_NAME. Required when `is_s3=True`
+        """
         self._is_new_db = is_new_db
         self._is_s3 = is_s3
         self._s3_bucket = s3_bucket
@@ -116,8 +123,11 @@ class DBController(object):
         if self._is_s3:
             self._s3_file.close()
 
-
-# class TaxonomyCreator(DBController):
+#
+# class TaxonomyDBCreator(SqliteDBController):
+#     """
+#     Class to create new taxonomy database
+#     """
 #
 #     taxon_file = "ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz"
 #     nodes_columns = ["tax_id", "parent_tax_id", "rank", "embl_code", "division_id",
@@ -185,7 +195,7 @@ class DBController(object):
 #         return False
 #
 #
-# class TaxonomyFinder(DBController):
+# class TaxonomyFinder(SqliteDBController):
 #
 #     default_clades = ["superkingdom", "kingdom", "phylum", "class",
 #                       "order", "family", "genus", "species"]

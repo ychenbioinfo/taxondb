@@ -6,17 +6,17 @@
 # ==============================================================================
 
 import os
-from taxondb import DBController
+from taxondb import SqliteDBController
 from taxondb.file import S3File
 
 current_dir = os.path.dirname(__file__)
 
 
 def test_dbcontroller():
-    controller1 = DBController()
+    controller1 = SqliteDBController()
     controller1.connect(os.path.join(current_dir, 'data/testdb.sqlite'))
 
-    controller2 = DBController()
+    controller2 = SqliteDBController()
     controller2.connect('test/newdb.sqlite', is_new_db=True, is_s3=True, s3_bucket='aperiomics-xploredb-dev')
     controller2.copy_table(controller1.db_connector, 'test')
 
