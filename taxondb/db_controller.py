@@ -195,7 +195,7 @@ class TaxonomyDBFinder(SqliteDBController):
         self.rev_phylo_tree = None
         self.phylo_rank = None
 
-    def find_taxid_parents(self, tid: str, clades: list = []):
+    def find_taxid_parents(self, tid: int, clades: list = []):
         """return taxonomy parents of requested taxonomy id
 
         Example:

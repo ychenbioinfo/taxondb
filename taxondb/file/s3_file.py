@@ -50,12 +50,12 @@ class S3File:
         self._s3_file = s3_file
         self._is_new_db = is_new_db
         self._is_cleaned = False
+        self._is_saved = True
         handle, self.file = mkstemp()
-        self.is_save = False
         self.is_closed = False
 
         if is_new_db:
-            self.is_save = True
+            self._is_saved = True
 
         if not is_new_db:
             s3.meta.client.download_file(self._s3_bucket, self._s3_file, self.file)
@@ -67,14 +67,23 @@ class S3File:
         if not self.is_closed:
             self.close()
 
+    @property
+    def is_saved(self):
+        return self._is_saved
+
+    @is_saved.setter
+    def is_saved(self, val: bool):
+        self._is_saved = val
+
     def close(self):
         """
         Close the file writing process and upload file to online storage.
         """
-        if self.is_save:
+        if not self._is_saved:
             s3.meta.client.upload_file(self.file, self._s3_bucket, self._s3_file)
         self.clean()
         self.is_closed = True
+        self._is_saved = True
 
     def terminate(self):
         """
@@ -92,7 +101,7 @@ class S3File:
         """
         with open(self.file, 'ab') as fh:
             fh.write(data)
-        self.is_save = True
+        self._is_saved = False
 
     def clean(self):
         """
@@ -114,3 +123,8 @@ class S3File:
             s3.Object(self._s3_bucket, self._s3_file).delete()
             self.clean()
             return True
+
+    def save(self):
+        if not self._is_saved:
+            s3.meta.client.upload_file(self.file, self._s3_bucket, self._s3_file)
+            self._is_saved = True
