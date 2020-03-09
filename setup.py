@@ -60,7 +60,7 @@ setup(
     author_email=about['__author_email__'],
     packages=['taxondb'],
     package_data={'': ['LICENSE']},
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=reqs('default.txt'),
 )
 
